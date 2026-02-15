@@ -29,6 +29,11 @@
             user-select: none;
         }
 
+        /* Разрешаем touch-action для экранов меню */
+        #startScreen, #gameOverScreen, #valentinesScreen {
+            touch-action: auto !important;
+        }
+
         #gameContainer {
             position: relative;
             width: 100vw;
@@ -105,6 +110,8 @@
     align-items: center;
     z-index: 100;
     overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
     padding: 20px;
     padding-top: 40px;
 }
@@ -197,6 +204,16 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            padding-bottom: 100px; /* Добавляем отступ снизу для мобильных */
+        }
+
+        @media (max-width: 600px) {
+            .valentines-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 10px;
+                padding-bottom: 100px;
+            }
         }
 
         .valentine-card {
@@ -564,7 +581,7 @@
             {
                 id: 6,
                 image: 'valentine6.jfif',
-                title: 'You + me = kiss, kiss',
+                title: 'you + me = kiss, kiss',
                 message: 'Art by Bogdan 💗',
                 heartsRequired: 350
             },
@@ -771,9 +788,11 @@
         }, false);
         
         document.addEventListener('touchmove', function(e) {
-            if (e.target === canvas || e.target.closest('#gameContainer')) {
+            // Блокируем скролл только на канвасе во время игры
+            if (e.target === canvas && gameState.running) {
                 e.preventDefault();
             }
+            // Разрешаем скролл на всех других элементах (меню, валентинки)
         }, { passive: false });
 
         const CAT_IMAGES = [
@@ -1010,7 +1029,7 @@
             vy: 0,
             vx: 0,
             gravity: 0.6,
-            jumpPower: 20,
+            jumpPower: 22,
             jumpForwardSpeed: 15,
             onGround: false,
             isDead: false,
@@ -1018,6 +1037,20 @@
             boostActive: false,
             boostEndTime: 0
         };
+        
+        // Адаптируем прыжок для мобильных устройств
+        function adjustJumpForDevice() {
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            if (isMobile) {
+                player.jumpPower = 18; // Уменьшаем силу прыжка на мобильных
+                player.gravity = 0.7; // Увеличиваем гравитацию
+            } else {
+                player.jumpPower = 22;
+                player.gravity = 0.6;
+            }
+        }
+        
+        adjustJumpForDevice();
         
         function updatePlayerSize() {
             const size = getPlayerSize();
