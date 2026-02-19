@@ -12,52 +12,61 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --vh: 1vh;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
         }
 
         body {
             font-family: 'Comic Sans MS', cursive, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            margin: 0;
-            padding: 0;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            position: fixed;
             touch-action: none;
-            -webkit-touch-callout: none;
             -webkit-user-select: none;
             user-select: none;
-        }
-
-        /* Разрешаем touch-action для экранов меню */
-        #startScreen, #gameOverScreen, #valentinesScreen {
-            touch-action: auto !important;
+            overscroll-behavior: none;
         }
 
         #gameContainer {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Используем CSS переменную для корректной высоты на iOS */
+            height: calc(var(--vh, 1vh) * 100);
             background: linear-gradient(to bottom, #87ceeb 0%, #ffd6e8 100%);
             overflow: hidden;
         }
 
         #gameCanvas {
             display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            image-rendering: pixelated;
-            image-rendering: -moz-crisp-edges;
-            image-rendering: crisp-edges;
+            touch-action: none;
         }
-        
+
         #gameCanvas.game-active {
             display: block;
         }
 
         #ui {
             position: absolute;
-            top: 10px;
+            top: env(safe-area-inset-top, 10px);
+            top: max(10px, env(safe-area-inset-top));
             left: 10px;
             right: 10px;
             display: flex;
@@ -65,190 +74,168 @@
             flex-wrap: wrap;
             gap: 5px;
             color: #ff1493;
-            font-size: clamp(14px, 3vw, 24px);
+            font-size: clamp(12px, 3vw, 22px);
             font-weight: bold;
             text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
             pointer-events: none;
             z-index: 10;
         }
 
-        @media (max-width: 600px) {
-            #ui {
-                top: 5px;
-                left: 5px;
-                right: 5px;
-                font-size: 12px;
-            }
+        /* ── Экраны меню ── */
+        #startScreen, #gameOverScreen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            height: calc(var(--vh, 1vh) * 100);
+            background: rgba(255, 255, 255, 0.97);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 20px;
+            padding-top: max(20px, env(safe-area-inset-top));
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
+            touch-action: pan-y;
         }
 
-      #startScreen, #gameOverScreen {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.95);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 100;
-    overflow-y: auto;
-    padding: 20px;
-}
-
-#valentinesScreen {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.95);
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    z-index: 100;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
-    padding: 20px;
-    padding-top: 40px;
-}
-
-        .hidden {
-            display: none !important;
+        #valentinesScreen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            height: calc(var(--vh, 1vh) * 100);
+            background: rgba(255, 255, 255, 0.97);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 100;
+            overflow-y: scroll;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            padding: 20px;
+            padding-top: max(40px, env(safe-area-inset-top));
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
+            touch-action: pan-y;
         }
+
+        .hidden { display: none !important; }
 
         h1 {
-            font-size: clamp(24px, 6vw, 48px);
+            font-size: clamp(22px, 5vw, 44px);
             color: #ff1493;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             text-shadow: 3px 3px 6px rgba(255, 105, 180, 0.3);
             text-align: center;
             padding: 0 10px;
         }
 
         .subtitle {
-            font-size: clamp(14px, 3vw, 18px);
+            font-size: clamp(13px, 2.5vw, 17px);
             color: #ff69b4;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             text-align: center;
             max-width: 90%;
-            padding: 0 10px;
         }
 
         button {
             background: linear-gradient(135deg, #ff6b9d 0%, #ff1493 100%);
             color: white;
             border: none;
-            padding: clamp(12px, 2vw, 15px) clamp(30px, 5vw, 40px);
-            font-size: clamp(18px, 4vw, 24px);
+            padding: clamp(12px, 2vw, 15px) clamp(28px, 5vw, 40px);
+            font-size: clamp(17px, 3.5vw, 22px);
             font-weight: bold;
             border-radius: 50px;
             cursor: pointer;
             box-shadow: 0 5px 15px rgba(255, 20, 147, 0.4);
-            transition: transform 0.2s;
+            transition: transform 0.15s, box-shadow 0.15s;
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
-            margin: 10px;
-        }
-
-        button:hover {
-            transform: translateY(-3px);
+            margin: 8px;
+            /* Минимальный размер для пальца */
+            min-height: 48px;
+            min-width: 120px;
         }
 
         button:active {
-            transform: translateY(0);
+            transform: scale(0.95);
+            box-shadow: 0 2px 8px rgba(255, 20, 147, 0.3);
         }
 
         .stats {
-            margin: 20px 0;
-            font-size: clamp(16px, 3vw, 20px);
+            margin: 15px 0;
+            font-size: clamp(15px, 3vw, 19px);
             color: #ff1493;
             text-align: center;
+            line-height: 1.7;
         }
 
         .instructions {
-            margin-top: 20px;
-            font-size: clamp(12px, 2.5vw, 14px);
+            margin-top: 15px;
+            font-size: clamp(11px, 2vw, 14px);
             color: #ff69b4;
             text-align: center;
-            padding: 0 10px;
-            line-height: 1.5;
-        }
-
-        #valentinesScreen {
-            padding: 20px;
-            overflow-y: auto;
+            padding: 0 15px;
+            line-height: 1.6;
         }
 
         .valentines-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             padding: 0 20px;
+            width: 100%;
         }
 
         .total-hearts {
-            font-size: clamp(20px, 4vw, 32px);
+            font-size: clamp(18px, 4vw, 30px);
             color: #ff1493;
             font-weight: bold;
-            margin: 10px 0;
-            text-shadow: 2px 2px 4px rgba(255, 20, 147, 0.3);
+            margin: 8px 0;
         }
 
         .valentines-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
             max-width: 1200px;
+            width: 100%;
             margin: 0 auto;
-            padding: 20px;
-            padding-bottom: 100px; /* Добавляем отступ снизу для мобильных */
+            padding: 10px 10px 40px;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 500px) {
             .valentines-grid {
                 grid-template-columns: 1fr;
-                gap: 20px;
-                padding: 10px;
-                padding-bottom: 100px;
+                gap: 18px;
             }
         }
 
         .valentine-card {
             background: white;
             border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(255, 20, 147, 0.2);
-            transition: transform 0.3s, box-shadow 0.3s;
+            padding: 18px;
+            box-shadow: 0 8px 25px rgba(255, 20, 147, 0.18);
+            transition: transform 0.25s, box-shadow 0.25s;
             position: relative;
-            overflow: hidden;
         }
 
-        .valentine-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(255, 20, 147, 0.3);
-        }
-
-        .valentine-card.locked {
-            cursor: not-allowed;
-        }
-
-        .valentine-card.unlocked {
-            cursor: pointer;
+        .valentine-card.unlocked:active {
+            transform: scale(0.97);
         }
 
         .valentine-image {
             width: 100%;
             aspect-ratio: 1;
             background: linear-gradient(135deg, #ffd6e8 0%, #ff69b4 100%);
-            border-radius: 15px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 80px;
-            margin-bottom: 15px;
+            font-size: 72px;
+            margin-bottom: 13px;
             position: relative;
             overflow: hidden;
         }
@@ -257,69 +244,39 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 15px;
+            border-radius: 14px;
         }
 
         .valentine-card.locked .valentine-image {
-            filter: blur(15px);
-        }
-
-        .valentine-card.locked .valentine-image img {
-            filter: blur(15px);
-        }
-
-        .valentine-card.unlocked .valentine-image {
-            animation: valentine-reveal 0.5s ease-out;
-        }
-
-        @keyframes valentine-reveal {
-            from {
-                filter: blur(15px);
-                opacity: 0.5;
-            }
-            to {
-                filter: blur(0);
-                opacity: 1;
-            }
+            filter: blur(14px);
         }
 
         .lock-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.9);
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.88);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            border-radius: 15px;
+            border-radius: 14px;
             pointer-events: none;
             z-index: 1;
         }
 
-        .lock-icon {
-            font-size: 40px;
-            margin-bottom: 10px;
-        }
-
-        .hearts-needed {
-            font-size: 14px;
-            font-weight: bold;
-            color: #ff1493;
-        }
+        .lock-icon { font-size: 38px; margin-bottom: 8px; }
+        .hearts-needed { font-size: 13px; font-weight: bold; color: #ff1493; }
 
         .valentine-title {
-            font-size: 18px;
+            font-size: 17px;
             font-weight: bold;
             color: #ff1493;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             text-align: center;
         }
 
         .valentine-message {
-            font-size: 14px;
+            font-size: 13px;
             color: #ff69b4;
             text-align: center;
             line-height: 1.5;
@@ -328,25 +285,23 @@
 
         .progress-bar-container {
             width: 100%;
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 0 20px;
-            margin-top: 30px;
+            max-width: 560px;
+            margin: 15px auto;
+            padding: 0 15px;
         }
 
         .progress-bar {
             width: 100%;
-            height: 30px;
-            background: rgba(255, 105, 180, 0.2);
-            border-radius: 15px;
+            height: 28px;
+            background: rgba(255,105,180,0.18);
+            border-radius: 14px;
             overflow: hidden;
-            position: relative;
         }
 
         .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, #ff6b9d 0%, #ff1493 100%);
-            border-radius: 15px;
+            border-radius: 14px;
             transition: width 0.5s ease;
             display: flex;
             align-items: center;
@@ -359,100 +314,95 @@
 
         .progress-text {
             text-align: center;
-            margin-top: 10px;
-            font-size: 14px;
+            margin-top: 8px;
+            font-size: 13px;
             color: #ff69b4;
-            padding: 0 10px;
         }
 
         .back-button {
             background: linear-gradient(135deg, #b19cd9 0%, #764ba2 100%);
-            margin-top: 20px;
+            margin: 15px 0 30px;
+            flex-shrink: 0;
         }
 
+        /* Модалка */
         .valentine-modal {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.82);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 200;
             padding: 20px;
+            touch-action: pan-y;
         }
 
         .valentine-modal-content {
             background: white;
             border-radius: 20px;
-            padding: 30px;
-            max-width: 500px;
+            padding: 28px;
+            max-width: 460px;
             width: 100%;
-            max-height: 90vh;
+            max-height: 88vh;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             position: relative;
-            animation: modal-appear 0.3s ease-out;
+            animation: modal-appear 0.25s ease-out;
         }
 
         @keyframes modal-appear {
-            from {
-                transform: scale(0.8);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
+            from { transform: scale(0.82); opacity: 0; }
+            to   { transform: scale(1);    opacity: 1; }
         }
 
         .modal-close {
             position: absolute;
-            top: 15px;
-            right: 15px;
+            top: 12px; right: 12px;
             background: none;
             border: none;
-            font-size: 30px;
+            font-size: 32px;
             cursor: pointer;
             color: #ff1493;
-            padding: 5px;
+            padding: 4px;
             margin: 0;
-            width: auto;
-            height: auto;
             box-shadow: none;
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .modal-valentine-image {
             width: 100%;
             aspect-ratio: 1;
             background: linear-gradient(135deg, #ffd6e8 0%, #ff69b4 100%);
-            border-radius: 15px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 120px;
-            margin-bottom: 20px;
+            font-size: 100px;
+            margin-bottom: 18px;
             overflow: hidden;
         }
 
         .modal-valentine-image img {
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             object-fit: cover;
-            border-radius: 15px;
+            border-radius: 14px;
         }
 
         .modal-title {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
             color: #ff1493;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             text-align: center;
         }
 
         .modal-message {
-            font-size: 18px;
+            font-size: 16px;
             color: #ff69b4;
             text-align: center;
             line-height: 1.6;
@@ -461,16 +411,46 @@
 
         .button-row {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             flex-wrap: wrap;
             justify-content: center;
+        }
+
+        /* Кнопка прыжка для мобильных */
+        #jumpBtn {
+            position: fixed;
+            bottom: max(30px, env(safe-area-inset-bottom, 30px));
+            right: 30px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255, 105, 180, 0.75);
+            border: 3px solid rgba(255, 20, 147, 0.8);
+            font-size: 36px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            box-shadow: 0 4px 15px rgba(255, 20, 147, 0.4);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            touch-action: manipulation;
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+            min-height: unset;
+            min-width: unset;
+        }
+
+        #jumpBtn.visible {
+            display: flex;
         }
     </style>
 </head>
 <body>
     <div id="gameContainer">
         <canvas id="gameCanvas"></canvas>
-        
+
         <div id="ui">
             <div>💖 Hearts: <span id="hearts">0</span></div>
             <div>⭐ Score: <span id="score">0</span></div>
@@ -481,11 +461,11 @@
             <h1>🧙‍♂️ Wizardio Valentine Rush 💘</h1>
             <p class="subtitle">Jump over the cats and collect hearts to unlock valentines!</p>
             <div class="button-row">
-                <button id="startBtn">Start Game</button>
+                <button id="startBtn">▶ Start Game</button>
                 <button id="valentinesBtn">💌 Valentines</button>
             </div>
             <p class="instructions">
-                🔼 Space/Click/W/Up Arrow – jump<br>
+                🔼 Tap / Space / W / Up Arrow — jump<br>
                 💕 Collect pink hearts = points<br>
                 🐱 Jump over the cats<br>
                 💌 Unlock valentines with collected hearts!<br>
@@ -500,35 +480,31 @@
                 <div>Hearts Collected: <span id="finalHearts">0</span></div>
                 <div>Final Score: <span id="finalScore">0</span></div>
                 <div>Distance Traveled: <span id="finalDistance">0</span>м</div>
-                <div style="margin-top: 15px; color: #ffa500;">💰 Total Hearts Collected: <span id="totalHeartsDisplay">0</span> hearts</div>
+                <div style="margin-top:12px;color:#ffa500;">💰 Total Hearts: <span id="totalHeartsDisplay">0</span></div>
             </div>
             <div class="button-row">
-                <button id="restartBtn">Play Again</button>
+                <button id="restartBtn">▶ Play Again</button>
                 <button id="valentinesFromGameOverBtn">💌 Valentines</button>
             </div>
         </div>
 
-<div id="valentinesScreen" class="hidden">
-    <div class="valentines-header">
-        <h1>💌 Valentine Collection 💌</h1>
-        <p class="total-hearts">💖 You have <span id="totalHeartsCount">0</span> hearts</p>
-        <p class="subtitle">Collect hearts in the game to unlock new valentines!</p>
-        
-        <div class="progress-bar-container">
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill">
-                    <span id="progressPercentage"></span>
+        <div id="valentinesScreen" class="hidden">
+            <div class="valentines-header">
+                <h1>💌 Valentine Collection 💌</h1>
+                <p class="total-hearts">💖 You have <span id="totalHeartsCount">0</span> hearts</p>
+                <p class="subtitle">Collect hearts in the game to unlock new valentines!</p>
+                <div class="progress-bar-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill">
+                            <span id="progressPercentage"></span>
+                        </div>
+                    </div>
+                    <p class="progress-text" id="progressText">Collect more hearts to unlock the next valentine</p>
                 </div>
             </div>
-            <p class="progress-text" id="progressText">Collect more hearts to unlock the next valentine</p>
+            <div class="valentines-grid" id="valentinesGrid"></div>
+            <button class="back-button" id="backToMenuBtn">← Back to Menu</button>
         </div>
-    </div>
-
-    <div class="valentines-grid" id="valentinesGrid">
-    </div>
-
-    <button class="back-button" id="backToMenuBtn">← Back to Menu</button>
-</div>
 
         <div id="valentineModal" class="valentine-modal hidden">
             <div class="valentine-modal-content">
@@ -538,1407 +514,788 @@
                 <p class="modal-message" id="modalMessage"></p>
             </div>
         </div>
+
+        <!-- Кнопка прыжка для мобильных -->
+        <button id="jumpBtn" aria-label="Jump">↑</button>
     </div>
 
     <script>
-        const VALENTINES_DATA = [
-            {
-                id: 1,
-                image: 'valentine1.png',
-                title: 'Two Magical Hearts',
-                message: 'Art by NO1ennn💖',
-                heartsRequired: 10
-            },
-            {
-                id: 2,
-                image: 'valentine2.png',
-                title: 'Will you be my Valentine?',
-                message: 'Art by Saiho 🌹',
-                heartsRequired: 25
-            },
-            {
-                id: 3,
-                image: 'valentine3.png',
-                title: 'Two Hearts',
-                message: 'Art by mussed 💕',
-                heartsRequired: 50
-            },
-            {
-                id: 4,
-                image: 'valentine4.png',
-                title: 'A Gift of Fate',
-                message: 'Art by Let it be 🎀',
-                heartsRequired: 100
-            },
-            {
-                id: 5,
-                image: 'valentine5.png',
-                title: 'Spread the love',
-                message: 'Art by redcipher 💖',
-                heartsRequired: 200
-            },
-            {
-                id: 6,
-                image: 'valentine6.jfif',
-                title: 'you + me = kiss, kiss',
-                message: 'Art by Bogdan 💗',
-                heartsRequired: 350
-            },
-            {
-                id: 7,
-                image: 'valentine7.jfif',
-                title: 'Wizzy sending a little kiss your way',
-                message: 'Art by Florence 🌟',
-                heartsRequired: 500
-            },
-            {
-                id: 8,
-                image: 'valentine8.jpeg',
-                title: "Wizardio and Vivz on Valentine's Day",
-                message: 'Art by Wizardio and Vivz? 💕',
-                heartsRequired: 700
-            }
-        ];
-        
-        let valentineImages = {};
-        let valentineImagesLoaded = {};
-        
-        function loadValentineImages() {
-            VALENTINES_DATA.forEach(valentine => {
-                if (valentine.image) {
-                    const img = new Image();
-                    img.onload = function() {
-                        valentineImages[valentine.id] = img;
-                        valentineImagesLoaded[valentine.id] = true;
-                    };
-                    img.onerror = function() {
-                        valentineImagesLoaded[valentine.id] = false;
-                    };
-                    img.src = valentine.image;
-                } else {
-                    valentineImagesLoaded[valentine.id] = false;
-                }
-            });
-        }
-        
-        loadValentineImages();
+    // ─── Исправление высоты для iOS (100vh баг) ────────────────────────────
+    function setVhVar() {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+    setVhVar();
+    window.addEventListener('resize', setVhVar);
+    window.addEventListener('orientationchange', () => { setTimeout(setVhVar, 150); });
 
-        function getTotalHearts() {
-            return parseInt(localStorage.getItem('totalHearts') || '0');
-        }
+    // ─── Определение мобильного устройства ─────────────────────────────────
+    const IS_MOBILE = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+                   || ('ontouchstart' in window);
+    const IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
-        function saveTotalHearts(hearts) {
-            localStorage.setItem('totalHearts', hearts.toString());
-            updateValentinesUI();
-        }
+    // ─── Данные валентинок ──────────────────────────────────────────────────
+    const VALENTINES_DATA = [
+        { id:1, image:'valentine1.png',  title:'Two Magical Hearts',                    message:'Art by NO1ennn💖',            heartsRequired:10  },
+        { id:2, image:'valentine2.png',  title:'Will you be my Valentine?',             message:'Art by Saiho 🌹',             heartsRequired:25  },
+        { id:3, image:'valentine3.png',  title:'Two Hearts',                            message:'Art by mussed 💕',            heartsRequired:50  },
+        { id:4, image:'valentine4.png',  title:'A Gift of Fate',                        message:'Art by Let it be 🎀',         heartsRequired:100 },
+        { id:5, image:'valentine5.png',  title:'Spread the love',                       message:'Art by redcipher 💖',         heartsRequired:200 },
+        { id:6, image:'valentine6.jfif', title:'you + me = kiss, kiss',                 message:'Art by Bogdan 💗',            heartsRequired:350 },
+        { id:7, image:'valentine7.jfif', title:'Wizzy sending a little kiss your way',  message:'Art by Florence 🌟',          heartsRequired:500 },
+        { id:8, image:'valentine8.jpeg', title:"Wizardio and Vivz on Valentine's Day",  message:'Art by Wizardio and Vivz? 💕',heartsRequired:700 }
+    ];
 
-        function addHearts(hearts) {
-            const current = getTotalHearts();
-            saveTotalHearts(current + hearts);
-        }
+    let valentineImages = {}, valentineImagesLoaded = {};
 
-        function updateValentinesUI() {
-            const totalHearts = getTotalHearts();
-            
-            document.getElementById('totalHeartsCount').textContent = totalHearts;
-            document.getElementById('totalHeartsDisplay').textContent = totalHearts;
-            
-            const grid = document.getElementById('valentinesGrid');
-            grid.innerHTML = '';
-            
-            VALENTINES_DATA.forEach(valentine => {
-                const isUnlocked = totalHearts >= valentine.heartsRequired;
-                
-                const card = document.createElement('div');
-                card.className = `valentine-card ${isUnlocked ? 'unlocked' : 'locked'}`;
-                
-                let imageContent = '';
-                if (valentineImagesLoaded[valentine.id] && valentineImages[valentine.id]) {
-                    imageContent = `<img src="${valentine.image}" alt="${valentine.title}">`;
-                } else {
-                    imageContent = '💝';
-                }
-                
-                card.innerHTML = `
-                    <div class="valentine-image">
-                        ${imageContent}
-                        ${!isUnlocked ? `
-                            <div class="lock-overlay">
-                                <div class="lock-icon">🔒</div>
-                                <div class="hearts-needed">${valentine.heartsRequired} 💖</div>
-                            </div>
-                        ` : ''}
-                    </div>
-                    <div class="valentine-title">${valentine.title}</div>
-                    <div class="valentine-message">${isUnlocked ? valentine.message : 'Collect hearts to unlock!'}</div>
-                `;
-                
-                if (isUnlocked) {
-                    card.addEventListener('click', () => openValentineModal(valentine));
-                }
-                
-                grid.appendChild(card);
-            });
-            
-            updateProgressBar(totalHearts);
-        }
+    function loadValentineImages() {
+        VALENTINES_DATA.forEach(v => {
+            const img = new Image();
+            img.onload  = () => { valentineImages[v.id] = img; valentineImagesLoaded[v.id] = true; };
+            img.onerror = () => { valentineImagesLoaded[v.id] = false; };
+            img.src = v.image;
+        });
+    }
+    loadValentineImages();
 
-        function updateProgressBar(totalHearts) {
-            const nextValentine = VALENTINES_DATA.find(v => v.heartsRequired > totalHearts);
-            
-            const progressFill = document.getElementById('progressFill');
-            const progressPercentage = document.getElementById('progressPercentage');
-            const progressText = document.getElementById('progressText');
-            
-            if (nextValentine) {
-                const progress = (totalHearts / nextValentine.heartsRequired) * 100;
-                progressFill.style.width = Math.min(progress, 100) + '%';
-                progressPercentage.textContent = Math.floor(progress) + '%';
-                
-                const remaining = nextValentine.heartsRequired - totalHearts;
-                progressText.textContent = `${remaining} 💖 more to unlock "${nextValentine.title}"`;
-            } else {
-                progressFill.style.width = '100%';
-                progressPercentage.textContent = '100%';
-                progressText.textContent = '🎉 Congratulations! All valentines are unlocked! 🎉';
-            }
-        }
+    // ─── Хранилище сердец ───────────────────────────────────────────────────
+    function getTotalHearts() { return parseInt(localStorage.getItem('totalHearts') || '0'); }
+    function saveTotalHearts(n) { localStorage.setItem('totalHearts', String(n)); updateValentinesUI(); }
+    function addHearts(n) { saveTotalHearts(getTotalHearts() + n); }
 
-        function openValentineModal(valentine) {
-            const modal = document.getElementById('valentineModal');
-            const modalImage = document.getElementById('modalValentineImage');
-            
-            if (valentineImagesLoaded[valentine.id] && valentineImages[valentine.id]) {
-                modalImage.innerHTML = `<img src="${valentine.image}" alt="${valentine.title}">`;
-            } else {
-                modalImage.textContent = '💝';
-            }
-            
-            document.getElementById('modalTitle').textContent = valentine.title;
-            document.getElementById('modalMessage').textContent = valentine.message;
-            modal.classList.remove('hidden');
-        }
+    // ─── UI валентинок ──────────────────────────────────────────────────────
+    function updateValentinesUI() {
+        const total = getTotalHearts();
+        document.getElementById('totalHeartsCount').textContent = total;
+        document.getElementById('totalHeartsDisplay').textContent = total;
 
-        function closeValentineModal() {
-            document.getElementById('valentineModal').classList.add('hidden');
-        }
+        const grid = document.getElementById('valentinesGrid');
+        grid.innerHTML = '';
 
-        document.getElementById('valentinesBtn').addEventListener('click', () => {
-            document.getElementById('startScreen').classList.add('hidden');
-            document.getElementById('valentinesScreen').classList.remove('hidden');
-            updateValentinesUI();
+        VALENTINES_DATA.forEach(v => {
+            const unlocked = total >= v.heartsRequired;
+            const card = document.createElement('div');
+            card.className = `valentine-card ${unlocked ? 'unlocked' : 'locked'}`;
+
+            const imgHtml = (valentineImagesLoaded[v.id] && valentineImages[v.id])
+                ? `<img src="${v.image}" alt="${v.title}">`
+                : '💝';
+
+            card.innerHTML = `
+                <div class="valentine-image">
+                    ${imgHtml}
+                    ${!unlocked ? `<div class="lock-overlay"><div class="lock-icon">🔒</div><div class="hearts-needed">${v.heartsRequired} 💖</div></div>` : ''}
+                </div>
+                <div class="valentine-title">${v.title}</div>
+                <div class="valentine-message">${unlocked ? v.message : 'Collect hearts to unlock!'}</div>
+            `;
+
+            if (unlocked) card.addEventListener('click', () => openValentineModal(v));
+            grid.appendChild(card);
         });
 
-        document.getElementById('valentinesFromGameOverBtn').addEventListener('click', () => {
-            document.getElementById('gameOverScreen').classList.add('hidden');
-            document.getElementById('valentinesScreen').classList.remove('hidden');
-            updateValentinesUI();
-        });
-
-        document.getElementById('backToMenuBtn').addEventListener('click', () => {
-            document.getElementById('valentinesScreen').classList.add('hidden');
-            document.getElementById('startScreen').classList.remove('hidden');
-        });
-
-        document.getElementById('closeModalBtn').addEventListener('click', closeValentineModal);
-        
-        document.getElementById('valentineModal').addEventListener('click', (e) => {
-            if (e.target.id === 'valentineModal') {
-                closeValentineModal();
-            }
-        });
-
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        
-        function resizeCanvas() {
-            const width = window.innerWidth;
-            const height = window.innerHeight;
-            
-            canvas.width = width;
-            canvas.height = height;
-            
-            updatePlayerSize();
-            
-            if (gameState.running && !player.isDead) {
-                player.y = canvas.height - getGroundHeight() - player.height;
-                
-                obstacles.forEach(obstacle => {
-                    const baseSize = getObstacleSize();
-                    obstacle.width = baseSize;
-                    obstacle.height = baseSize;
-                    obstacle.y = canvas.height - getGroundHeight() - obstacle.height;
-                });
-            }
-        }
-        
-        window.addEventListener('resize', resizeCanvas);
-        window.addEventListener('orientationchange', () => {
-            setTimeout(resizeCanvas, 100);
-        });
-        
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', function (event) {
-            const now = Date.now();
-            if (now - lastTouchEnd <= 300) {
-                event.preventDefault();
-            }
-            lastTouchEnd = now;
-        }, false);
-        
-        document.addEventListener('touchmove', function(e) {
-            // Блокируем скролл только на канвасе во время игры
-            if (e.target === canvas && gameState.running) {
-                e.preventDefault();
-            }
-            // Разрешаем скролл на всех других элементах (меню, валентинки)
-        }, { passive: false });
-
-        const CAT_IMAGES = [
-            'https://i.pinimg.com/736x/31/cb/83/31cb83d288b2ff0d260513fbb08d74bc.jpg',
-            'https://i.pinimg.com/736x/0b/31/ad/0b31ad9d72f66a55af6f1fc67689150a.jpg',
-            'https://i.pinimg.com/736x/e1/78/ed/e178ed3d4101a7f87d89db1b9338f440.jpg',
-            'https://i.pinimg.com/736x/44/ac/3c/44ac3cf5bc283256e0ded20a27c241bd.jpg',
-            'https://i.pinimg.com/736x/75/29/63/752963d4c802bf488435f0590c0c3b55.jpg',
-            'https://i.pinimg.com/1200x/d1/3b/fd/d13bfda344c87429c85c14879e2a0000.jpg',
-            'https://i.pinimg.com/736x/9c/af/fa/9caffafad09945b3da180b6d5c8ed76d.jpg',
-            'https://i.pinimg.com/736x/1e/22/ac/1e22ac75231c69ff7710e9cad66910ef.jpg',
-            'https://i.pinimg.com/736x/aa/44/75/aa447509817a6811abd64d3fd1fce9b2.jpg',
-        ];
-        
-        let catImages = [];
-        let imagesLoaded = 0;
-
-        function loadCatImages() {
-            CAT_IMAGES.forEach((url, index) => {
-                const img = new Image();
-                img.onload = function() {
-                    catImages[index] = img;
-                    imagesLoaded++;
-                };
-                img.onerror = function() {
-                    imagesLoaded++;
-                };
-                img.src = url;
-            });
-        }
-
-        loadCatImages();
-
-        let playerImage = new Image();
-        let playerImageLoaded = false;
-        
-        playerImage.onload = function() {
-            playerImageLoaded = true;
-        };
-        
-        playerImage.onerror = function() {
-            usePlayerImage = false;
-        };
-        
-        playerImage.src = 'player.png';
-        let usePlayerImage = true;
-
-        let powerupImage = new Image();
-        let powerupImageLoaded = false;
-        
-        powerupImage.onload = function() {
-            powerupImageLoaded = true;
-            console.log('✅ Powerup image loaded successfully!');
-        };
-        
-        powerupImage.onerror = function() {
-            console.log('⚠️ Powerup image not found, using emoji instead');
-            powerupImageLoaded = false;
-        };
-        
-        powerupImage.src = 'powerup.png';
-
-        let gameMusic = new Audio();
-        gameMusic.src = 'music.mp3';
-        gameMusic.loop = true;
-        gameMusic.volume = 0.3;
-        let useMusicInGame = true;
-        
-        function playGameMusic() {
-            if (useMusicInGame) {
-                gameMusic.play().catch(error => {});
-            }
-        }
-        
-        function stopGameMusic() {
-            if (useMusicInGame) {
-                gameMusic.pause();
-                gameMusic.currentTime = 0;
-            }
-        }
-
-        let heartCollectSound = new Audio();
-        let deathSound = new Audio();
-        let powerupSound = new Audio();
-        
-        heartCollectSound.src = 'heart-collect.mp3';
-        deathSound.src = 'death.mp3';
-        powerupSound.src = 'powerup.mp3';
-        
-        heartCollectSound.volume = 0.4;
-        deathSound.volume = 0.5;
-        powerupSound.volume = 0.5;
-        
-        let useSoundEffects = true;
-        
-        function playHeartSound() {
-            if (useSoundEffects) {
-                heartCollectSound.currentTime = 0;
-                heartCollectSound.play().catch(error => {});
-            }
-        }
-        
-        function playDeathSound() {
-            if (useSoundEffects) {
-                deathSound.currentTime = 0;
-                deathSound.play().catch(error => {});
-            }
-        }
-        
-        function playPowerupSound() {
-            if (useSoundEffects) {
-                powerupSound.currentTime = 0;
-                powerupSound.play().catch(error => {});
-            }
-        }
-
-        function getGroundHeight() {
-            return canvas.height * 0.095;
-        }
-
-        // Система биомов
-        const BIOMES = [
-            {
-                name: 'Valentine Sky',
-                heartsRequired: 0,
-                skyColors: ['#87ceeb', '#b0e0e6', '#e0f6ff'],
-                groundColors: ['#90ee90', '#7cb342', '#558b2f'],
-                cloudColor: '#ffffff',
-                notification: '💖 Welcome to Valentine Sky!'
-            },
-            {
-                name: 'Candy Land',
-                heartsRequired: 50,
-                skyColors: ['#ffb3d9', '#ffd6e8', '#ffe6f2'],
-                groundColors: ['#ffb3d9', '#ff69b4', '#ff1493'],
-                cloudColor: '#ffccff',
-                notification: '🍬 You entered Candy Land!'
-            },
-            {
-                name: 'Sunset Paradise',
-                heartsRequired: 100,
-                skyColors: ['#ff6b6b', '#ffa07a', '#ffd700'],
-                groundColors: ['#ff8c42', '#ff6b35', '#d84315'],
-                cloudColor: '#ff9966',
-                notification: '🌅 Welcome to Sunset Paradise!'
-            },
-            {
-                name: 'Crystal Cave',
-                heartsRequired: 150,
-                skyColors: ['#667eea', '#764ba2', '#9575cd'],
-                groundColors: ['#7e57c2', '#5e35b1', '#4527a0'],
-                cloudColor: '#b39ddb',
-                notification: '💎 You discovered Crystal Cave!'
-            },
-            {
-                name: 'Mystic Forest',
-                heartsRequired: 200,
-                skyColors: ['#2d5f3f', '#3d7f5f', '#4d9f7f'],
-                groundColors: ['#1b5e20', '#2e7d32', '#388e3c'],
-                cloudColor: '#66bb6a',
-                notification: '🌲 You entered Mystic Forest!'
-            },
-            {
-                name: 'Golden Realm',
-                heartsRequired: 300,
-                skyColors: ['#ffd700', '#ffed4e', '#fff176'],
-                groundColors: ['#ff9800', '#f57c00', '#e65100'],
-                cloudColor: '#ffe082',
-                notification: '✨ Welcome to Golden Realm!'
-            },
-            {
-                name: 'Aurora Night',
-                heartsRequired: 400,
-                skyColors: ['#1a237e', '#283593', '#3f51b5'],
-                groundColors: ['#0d47a1', '#1565c0', '#1976d2'],
-                cloudColor: '#7986cb',
-                notification: '🌌 You reached Aurora Night!'
-            },
-            {
-                name: 'Rainbow Heaven',
-                heartsRequired: 500,
-                skyColors: ['#e91e63', '#9c27b0', '#3f51b5'],
-                groundColors: ['#ff9800', '#ffeb3b', '#4caf50'],
-                cloudColor: '#ce93d8',
-                notification: '🌈 You ascended to Rainbow Heaven!'
-            }
-        ];
-
-        let currentBiome = BIOMES[0];
-        let biomeNotificationTime = 0;
-        let showBiomeNotification = false;
-
-        function getCurrentBiome(totalHearts) {
-            for (let i = BIOMES.length - 1; i >= 0; i--) {
-                if (totalHearts >= BIOMES[i].heartsRequired) {
-                    return BIOMES[i];
-                }
-            }
-            return BIOMES[0];
-        }
-
-        function checkBiomeChange(totalHearts) {
-            const newBiome = getCurrentBiome(totalHearts);
-            if (newBiome.name !== currentBiome.name) {
-                currentBiome = newBiome;
-                showBiomeNotification = true;
-                biomeNotificationTime = Date.now();
-            }
-        }
-
-        let gameState = {
-            running: false,
-            score: 0,
-            heartsCollected: 0,
-            distance: 0,
-            gameSpeed: 2
-        };
-
-        function getPlayerSize() {
-            const baseWidth = 100;
-            const baseHeight = 100;
-            const scale = Math.min(canvas.width / 800, canvas.height / 600, 1.5);
-            return {
-                width: baseWidth * scale,
-                height: baseHeight * scale
-            };
-        }
-        
-        const player = {
-            x: 0,
-            y: 0,
-            width: 60,
-            height: 60,
-            vy: 0,
-            vx: 0,
-            gravity: 0.6,
-            jumpPower: 22,
-            jumpForwardSpeed: 15,
-            onGround: false,
-            isDead: false,
-            initialX: 0,
-            boostActive: false,
-            boostEndTime: 0
-        };
-        
-        // Адаптируем прыжок для мобильных устройств
-        function adjustJumpForDevice() {
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            if (isMobile) {
-                player.jumpPower = 18; // Уменьшаем силу прыжка на мобильных
-                player.gravity = 0.7; // Увеличиваем гравитацию
-            } else {
-                player.jumpPower = 22;
-                player.gravity = 0.6;
-            }
-        }
-        
-        adjustJumpForDevice();
-        
-        function updatePlayerSize() {
-            const size = getPlayerSize();
-            player.width = size.width;
-            player.height = size.height;
-            if (!gameState.running) {
-                player.x = canvas.width * 0.15;
-                player.initialX = player.x;
-                player.y = canvas.height - getGroundHeight() - player.height;
-            }
-        }
-
-        let obstacles = [];
-        let hearts = [];
-        let powerups = [];
-        let particles = [];
-        let clouds = [];
-
-        class Cloud {
-            constructor(x, y) {
-                this.x = x;
-                this.y = y;
-                this.speed = 0.3 + Math.random() * 0.5;
-                this.scale = 0.5 + Math.random() * 1;
-                this.opacity = 0.3 + Math.random() * 0.4;
-            }
-
-            update() {
-                this.x -= this.speed;
-                if (this.x < -150 * this.scale) {
-                    this.x = canvas.width + 50;
-                    this.y = Math.random() * (canvas.height * 0.4);
-                }
-            }
-
-            draw() {
-                ctx.save();
-                ctx.globalAlpha = this.opacity;
-                ctx.fillStyle = currentBiome.cloudColor; // Используем цвет облаков из биома
-                
-                const baseSize = 40 * this.scale;
-                
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, baseSize, 0, Math.PI * 2);
-                ctx.arc(this.x + baseSize * 1.2, this.y, baseSize * 0.8, 0, Math.PI * 2);
-                ctx.arc(this.x + baseSize * 2, this.y, baseSize * 0.9, 0, Math.PI * 2);
-                ctx.arc(this.x + baseSize * 0.6, this.y - baseSize * 0.5, baseSize * 0.7, 0, Math.PI * 2);
-                ctx.arc(this.x + baseSize * 1.6, this.y - baseSize * 0.4, baseSize * 0.75, 0, Math.PI * 2);
-                ctx.fill();
-                
-                ctx.restore();
-            }
-        }
-
-class Airplane {
-    constructor() {
-        this.x = -200;
-        this.y = canvas.height * 0.15;
-        this.speed = 2;
-        this.scale = 1;
-        this.bannerOffset = 0;
-        this.visible = true;
-        this.nextAppearanceTime = Date.now() + this.getRandomDelay();
-        this.isFirstAppearance = true;
-        
-        this.bannerTexts = [
-            'composability',
-            'speed',
-            'real-time',
-            'ephemeral rollups'
-        ];
-        this.currentBannerText = 'MagicBlock';
+        updateProgressBar(total);
     }
 
-    getRandomDelay() {
-        return 10000 + Math.random() * 10000;
-    }
+    function updateProgressBar(total) {
+        const next = VALENTINES_DATA.find(v => v.heartsRequired > total);
+        const fill = document.getElementById('progressFill');
+        const pct  = document.getElementById('progressPercentage');
+        const txt  = document.getElementById('progressText');
 
-    getRandomBannerText() {
-        return this.bannerTexts[Math.floor(Math.random() * this.bannerTexts.length)];
-    }
-
-    reset() {
-        this.x = -200;
-        this.y = canvas.height * 0.1 + Math.random() * (canvas.height * 0.2);
-        this.visible = true;
-        this.bannerOffset = 0;
-        this.nextAppearanceTime = Date.now() + this.getRandomDelay();
-        
-        if (this.isFirstAppearance) {
-            this.currentBannerText = 'MagicBlock';
-            this.isFirstAppearance = false;
+        if (next) {
+            const p = Math.min((total / next.heartsRequired) * 100, 100);
+            fill.style.width = p + '%';
+            pct.textContent = Math.floor(p) + '%';
+            txt.textContent = `${next.heartsRequired - total} 💖 more to unlock "${next.title}"`;
         } else {
-            this.currentBannerText = this.getRandomBannerText();
+            fill.style.width = '100%';
+            pct.textContent = '100%';
+            txt.textContent = '🎉 All valentines unlocked! 🎉';
         }
     }
 
-    update() {
-        const currentTime = Date.now();
-        
-        if (!this.visible && currentTime >= this.nextAppearanceTime) {
-            this.visible = true;
-            this.x = -200;
-            this.y = canvas.height * 0.1 + Math.random() * (canvas.height * 0.2);
-            this.currentBannerText = this.getRandomBannerText();
+    function openValentineModal(v) {
+        const modal = document.getElementById('valentineModal');
+        const mi    = document.getElementById('modalValentineImage');
+        mi.innerHTML = (valentineImagesLoaded[v.id] && valentineImages[v.id])
+            ? `<img src="${v.image}" alt="${v.title}">`
+            : '💝';
+        document.getElementById('modalTitle').textContent   = v.title;
+        document.getElementById('modalMessage').textContent = v.message;
+        modal.classList.remove('hidden');
+    }
+
+    function closeValentineModal() {
+        document.getElementById('valentineModal').classList.add('hidden');
+    }
+
+    // ─── Навигация экранов ──────────────────────────────────────────────────
+    function showScreen(id) {
+        ['startScreen','gameOverScreen','valentinesScreen'].forEach(s => {
+            document.getElementById(s).classList.add('hidden');
+        });
+        if (id) document.getElementById(id).classList.remove('hidden');
+    }
+
+    document.getElementById('valentinesBtn').addEventListener('click', () => {
+        showScreen('valentinesScreen'); updateValentinesUI();
+    });
+    document.getElementById('valentinesFromGameOverBtn').addEventListener('click', () => {
+        showScreen('valentinesScreen'); updateValentinesUI();
+    });
+    document.getElementById('backToMenuBtn').addEventListener('click', () => {
+        showScreen('startScreen');
+    });
+    document.getElementById('closeModalBtn').addEventListener('click', closeValentineModal);
+    document.getElementById('valentineModal').addEventListener('click', e => {
+        if (e.target.id === 'valentineModal') closeValentineModal();
+    });
+
+    // ─── Canvas ─────────────────────────────────────────────────────────────
+    const canvas = document.getElementById('gameCanvas');
+    const ctx    = canvas.getContext('2d');
+
+    function resizeCanvas() {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        if (canvas.width !== w || canvas.height !== h) {
+            canvas.width  = w;
+            canvas.height = h;
         }
-
-        if (this.visible) {
-            this.x += this.speed;
-            this.bannerOffset += 0.1;
-
-            if (this.x > canvas.width + 300) {
-                this.visible = false;
-                this.nextAppearanceTime = Date.now() + this.getRandomDelay();
-            }
+        updatePlayerSize();
+        if (gameState.running && !player.isDead) {
+            player.y = canvas.height - getGroundHeight() - player.height;
+            obstacles.forEach(o => {
+                const s = getObstacleSize();
+                o.width = s; o.height = s;
+                o.y = canvas.height - getGroundHeight() - o.height;
+            });
         }
     }
 
-    draw() {
-        if (!this.visible) return;
+    window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(resizeCanvas, 100); });
+    window.addEventListener('orientationchange', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(resizeCanvas, 200); });
+    let resizeTimer;
 
-        ctx.save();
-        
-        const bannerX = this.x - 200;
-        const bannerY = this.y;
-        const bannerWidth = 180;
-        const bannerHeight = 30;
-        
-        ctx.strokeStyle = '#ff6b9d';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(bannerX + bannerWidth, bannerY + bannerHeight / 2);
-        for (let i = 0; i < 20; i++) {
-            const x = bannerX + bannerWidth + i * 2;
-            const y = bannerY + bannerHeight / 2 + Math.sin(i * 0.5 + this.bannerOffset) * 3;
-            ctx.lineTo(x, y);
+    // ─── Аудио (ленивая инициализация) ─────────────────────────────────────
+    let audioUnlocked = false;
+    let gameMusic, heartCollectSound, deathSound, powerupSound;
+
+    function unlockAudio() {
+        if (audioUnlocked) return;
+        audioUnlocked = true;
+
+        // Создаём короткий silent buffer для разблокировки AudioContext на iOS
+        try {
+            const ac = new (window.AudioContext || window.webkitAudioContext)();
+            const buf = ac.createBuffer(1, 1, 22050);
+            const src = ac.createBufferSource();
+            src.buffer = buf;
+            src.connect(ac.destination);
+            src.start(0);
+            ac.resume();
+        } catch(e) {}
+
+        gameMusic = new Audio('music.mp3');
+        gameMusic.loop   = true;
+        gameMusic.volume = 0.3;
+
+        heartCollectSound = new Audio('heart-collect.mp3');
+        heartCollectSound.volume = 0.4;
+
+        deathSound = new Audio('death.mp3');
+        deathSound.volume = 0.5;
+
+        powerupSound = new Audio('powerup.mp3');
+        powerupSound.volume = 0.5;
+    }
+
+    // Разблокируем аудио при первом касании/клике
+    document.addEventListener('touchstart', unlockAudio, { once: true, passive: true });
+    document.addEventListener('mousedown',  unlockAudio, { once: true });
+
+    function playMusic()   { if (gameMusic) { gameMusic.currentTime = 0; gameMusic.play().catch(()=>{}); } }
+    function stopMusic()   { if (gameMusic) { gameMusic.pause(); gameMusic.currentTime = 0; } }
+    function playHeart()   { if (heartCollectSound) { heartCollectSound.currentTime = 0; heartCollectSound.play().catch(()=>{}); } }
+    function playDeath()   { if (deathSound)        { deathSound.currentTime = 0;        deathSound.play().catch(()=>{}); } }
+    function playPowerup() { if (powerupSound)       { powerupSound.currentTime = 0;      powerupSound.play().catch(()=>{}); } }
+
+    // ─── Изображения ────────────────────────────────────────────────────────
+    const CAT_IMAGES = [
+        'https://i.pinimg.com/736x/31/cb/83/31cb83d288b2ff0d260513fbb08d74bc.jpg',
+        'https://i.pinimg.com/736x/0b/31/ad/0b31ad9d72f66a55af6f1fc67689150a.jpg',
+        'https://i.pinimg.com/736x/e1/78/ed/e178ed3d4101a7f87d89db1b9338f440.jpg',
+        'https://i.pinimg.com/736x/44/ac/3c/44ac3cf5bc283256e0ded20a27c241bd.jpg',
+        'https://i.pinimg.com/736x/75/29/63/752963d4c802bf488435f0590c0c3b55.jpg',
+        'https://i.pinimg.com/1200x/d1/3b/fd/d13bfda344c87429c85c14879e2a0000.jpg',
+        'https://i.pinimg.com/736x/9c/af/fa/9caffafad09945b3da180b6d5c8ed76d.jpg',
+        'https://i.pinimg.com/736x/1e/22/ac/1e22ac75231c69ff7710e9cad66910ef.jpg',
+        'https://i.pinimg.com/736x/aa/44/75/aa447509817a6811abd64d3fd1fce9b2.jpg',
+    ];
+    let catImages = [], imagesLoaded = 0;
+    CAT_IMAGES.forEach((url, i) => {
+        const img = new Image();
+        img.onload  = () => { catImages[i] = img; imagesLoaded++; };
+        img.onerror = () => { imagesLoaded++; };
+        img.src = url;
+    });
+
+    const playerImage = new Image();
+    let playerImageLoaded = false;
+    playerImage.onload  = () => { playerImageLoaded = true; };
+    playerImage.onerror = () => { playerImageLoaded = false; };
+    playerImage.src = 'player.png';
+
+    const powerupImage = new Image();
+    let powerupImageLoaded = false;
+    powerupImage.onload  = () => { powerupImageLoaded = true; };
+    powerupImage.onerror = () => { powerupImageLoaded = false; };
+    powerupImage.src = 'powerup.png';
+
+    // ─── Вспомогательные функции ────────────────────────────────────────────
+    function getGroundHeight()  { return canvas.height * 0.095; }
+    function getObstacleSize()  { return Math.min(canvas.width, canvas.height) * 0.07; }
+    function getHeartSize()     { return Math.min(canvas.width, canvas.height) * 0.033; }
+
+    function getPlayerSize() {
+        const s = Math.min(canvas.width / 800, canvas.height / 600, 1.5);
+        return { width: 100 * s, height: 100 * s };
+    }
+
+    // ─── Биомы ──────────────────────────────────────────────────────────────
+    const BIOMES = [
+        { name:'Valentine Sky',   heartsRequired:0,   skyColors:['#87ceeb','#b0e0e6','#e0f6ff'], groundColors:['#90ee90','#7cb342','#558b2f'], cloudColor:'#ffffff', notification:'💖 Welcome to Valentine Sky!'   },
+        { name:'Candy Land',      heartsRequired:50,  skyColors:['#ffb3d9','#ffd6e8','#ffe6f2'], groundColors:['#ffb3d9','#ff69b4','#ff1493'], cloudColor:'#ffccff', notification:'🍬 You entered Candy Land!'       },
+        { name:'Sunset Paradise', heartsRequired:100, skyColors:['#ff6b6b','#ffa07a','#ffd700'], groundColors:['#ff8c42','#ff6b35','#d84315'], cloudColor:'#ff9966', notification:'🌅 Welcome to Sunset Paradise!'   },
+        { name:'Crystal Cave',    heartsRequired:150, skyColors:['#667eea','#764ba2','#9575cd'], groundColors:['#7e57c2','#5e35b1','#4527a0'], cloudColor:'#b39ddb', notification:'💎 You discovered Crystal Cave!'  },
+        { name:'Mystic Forest',   heartsRequired:200, skyColors:['#2d5f3f','#3d7f5f','#4d9f7f'], groundColors:['#1b5e20','#2e7d32','#388e3c'], cloudColor:'#66bb6a', notification:'🌲 You entered Mystic Forest!'     },
+        { name:'Golden Realm',    heartsRequired:300, skyColors:['#ffd700','#ffed4e','#fff176'], groundColors:['#ff9800','#f57c00','#e65100'], cloudColor:'#ffe082', notification:'✨ Welcome to Golden Realm!'      },
+        { name:'Aurora Night',    heartsRequired:400, skyColors:['#1a237e','#283593','#3f51b5'], groundColors:['#0d47a1','#1565c0','#1976d2'], cloudColor:'#7986cb', notification:'🌌 You reached Aurora Night!'     },
+        { name:'Rainbow Heaven',  heartsRequired:500, skyColors:['#e91e63','#9c27b0','#3f51b5'], groundColors:['#ff9800','#ffeb3b','#4caf50'], cloudColor:'#ce93d8', notification:'🌈 You ascended to Rainbow Heaven!'},
+    ];
+
+    let currentBiome = BIOMES[0];
+    let biomeNotificationTime = 0, showBiomeNotification = false;
+
+    function getCurrentBiome(h) {
+        for (let i = BIOMES.length - 1; i >= 0; i--) if (h >= BIOMES[i].heartsRequired) return BIOMES[i];
+        return BIOMES[0];
+    }
+    function checkBiomeChange(h) {
+        const nb = getCurrentBiome(h);
+        if (nb.name !== currentBiome.name) { currentBiome = nb; showBiomeNotification = true; biomeNotificationTime = Date.now(); }
+    }
+
+    // ─── Состояние игры ──────────────────────────────────────────────────────
+    let gameState = { running:false, score:0, heartsCollected:0, distance:0, gameSpeed:2 };
+
+    const player = {
+        x:0, y:0, width:60, height:60,
+        vy:0, vx:0,
+        gravity: IS_MOBILE ? 0.65 : 0.6,
+        jumpPower: IS_MOBILE ? 19 : 22,
+        jumpForwardSpeed: 15,
+        onGround:true, isDead:false,
+        initialX:0,
+        boostActive:false, boostEndTime:0
+    };
+
+    function updatePlayerSize() {
+        const sz = getPlayerSize();
+        player.width = sz.width; player.height = sz.height;
+        if (!gameState.running) {
+            player.x = canvas.width * 0.15;
+            player.initialX = player.x;
+            player.y = canvas.height - getGroundHeight() - player.height;
         }
-        ctx.stroke();
-        
-        ctx.fillStyle = '#ffffff';
-        ctx.strokeStyle = '#ff1493';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.roundRect(bannerX, bannerY, bannerWidth, bannerHeight, 5);
-        ctx.fill();
-        ctx.stroke();
-        
-        ctx.font = 'bold 14px Arial, sans-serif';
-        ctx.fillStyle = '#ff1493';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(this.currentBannerText, bannerX + bannerWidth / 2, bannerY + bannerHeight / 2);
-        
-        const planeX = this.x;
-        const planeY = this.y;
-        
-        ctx.fillStyle = '#ffb3d9';
-        ctx.strokeStyle = '#ff1493';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.arc(planeX, planeY, 18, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.stroke();
-        
-        ctx.fillStyle = '#ff69b4';
-        ctx.beginPath();
-        ctx.arc(planeX + 25, planeY, 10, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.stroke();
-        
-        ctx.fillStyle = '#ff1493';
-        
-        ctx.save();
-        ctx.translate(planeX - 5, planeY - 20);
-        ctx.scale(0.8, 0.8);
-        ctx.beginPath();
-        ctx.moveTo(0, 5);
-        ctx.bezierCurveTo(-10, -5, -20, 2, 0, 20);
-        ctx.bezierCurveTo(20, 2, 10, -5, 0, 5);
-        ctx.fill();
-        ctx.stroke();
-        ctx.restore();
-        
-        ctx.save();
-        ctx.translate(planeX - 5, planeY + 20);
-        ctx.scale(0.8, -0.8);
-        ctx.beginPath();
-        ctx.moveTo(0, 5);
-        ctx.bezierCurveTo(-10, -5, -20, 2, 0, 20);
-        ctx.bezierCurveTo(20, 2, 10, -5, 0, 5);
-        ctx.fill();
-        ctx.stroke();
-        ctx.restore();
-        
-        ctx.fillStyle = '#ff69b4';
-        ctx.beginPath();
-        ctx.moveTo(planeX - 18, planeY);
-        ctx.lineTo(planeX - 30, planeY - 12);
-        ctx.lineTo(planeX - 18, planeY - 5);
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
-        
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.arc(planeX + 8, planeY - 5, 5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#333333';
-        ctx.beginPath();
-        ctx.arc(planeX + 9, planeY - 5, 3, 0, Math.PI * 2);
-        ctx.fill();
-        
-        ctx.strokeStyle = '#ff1493';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(planeX + 10, planeY + 2, 6, 0, Math.PI);
-        ctx.stroke();
-        
-        ctx.strokeStyle = '#ff1493';
-        ctx.lineWidth = 3;
-        const propellerAngle = this.bannerOffset * 12;
-        for (let i = 0; i < 2; i++) {
-            const angle = propellerAngle + (i * Math.PI);
+    }
+
+    let obstacles = [], hearts = [], powerups = [], particles = [], clouds = [];
+
+    // ─── Облако ──────────────────────────────────────────────────────────────
+    class Cloud {
+        constructor(x, y) {
+            this.x = x; this.y = y;
+            this.speed = 0.3 + Math.random() * 0.5;
+            this.scale = 0.5 + Math.random();
+            this.opacity = 0.3 + Math.random() * 0.4;
+        }
+        update() {
+            this.x -= this.speed;
+            if (this.x < -150 * this.scale) { this.x = canvas.width + 50; this.y = Math.random() * canvas.height * 0.4; }
+        }
+        draw() {
+            ctx.save();
+            ctx.globalAlpha = this.opacity;
+            ctx.fillStyle = currentBiome.cloudColor;
+            const s = 40 * this.scale;
             ctx.beginPath();
-            ctx.moveTo(planeX + 30, planeY);
-            ctx.lineTo(
-                planeX + 30 + Math.cos(angle) * 12,
-                planeY + Math.sin(angle) * 12
-            );
-            ctx.stroke();
+            ctx.arc(this.x, this.y, s, 0, Math.PI*2);
+            ctx.arc(this.x+s*1.2, this.y, s*0.8, 0, Math.PI*2);
+            ctx.arc(this.x+s*2, this.y, s*0.9, 0, Math.PI*2);
+            ctx.arc(this.x+s*0.6, this.y-s*0.5, s*0.7, 0, Math.PI*2);
+            ctx.arc(this.x+s*1.6, this.y-s*0.4, s*0.75, 0, Math.PI*2);
+            ctx.fill();
+            ctx.restore();
         }
-        
-        ctx.restore();
     }
-}
 
-        let airplane = new Airplane();
+    // ─── Самолёт ─────────────────────────────────────────────────────────────
+    class Airplane {
+        constructor() {
+            this.x = -200; this.y = 0; this.speed = 2;
+            this.bannerOffset = 0; this.visible = true;
+            this.nextTime = Date.now() + this.randDelay();
+            this.first = true;
+            this.texts = ['composability','speed','real-time','ephemeral rollups'];
+            this.text = 'MagicBlock';
+        }
+        randDelay() { return 10000 + Math.random() * 10000; }
+        reset() {
+            this.x = -200; this.y = canvas.height * 0.1 + Math.random() * canvas.height * 0.2;
+            this.visible = true; this.bannerOffset = 0;
+            this.nextTime = Date.now() + this.randDelay();
+            this.text = this.first ? (this.first=false,'MagicBlock') : this.texts[Math.floor(Math.random()*this.texts.length)];
+        }
+        update() {
+            if (!this.visible && Date.now() >= this.nextTime) {
+                this.visible = true; this.x = -200;
+                this.y = canvas.height * 0.1 + Math.random() * canvas.height * 0.2;
+                this.text = this.texts[Math.floor(Math.random()*this.texts.length)];
+            }
+            if (this.visible) {
+                this.x += this.speed; this.bannerOffset += 0.1;
+                if (this.x > canvas.width + 300) { this.visible = false; this.nextTime = Date.now() + this.randDelay(); }
+            }
+        }
+        draw() {
+            if (!this.visible) return;
+            ctx.save();
+            const bx = this.x-200, by = this.y, bw = 180, bh = 30;
+            // верёвка
+            ctx.strokeStyle = '#ff6b9d'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(bx+bw, by+bh/2);
+            for (let i=0;i<20;i++) ctx.lineTo(bx+bw+i*2, by+bh/2+Math.sin(i*0.5+this.bannerOffset)*3);
+            ctx.stroke();
+            // баннер
+            ctx.fillStyle='#fff'; ctx.strokeStyle='#ff1493'; ctx.lineWidth=3;
+            ctx.beginPath(); ctx.roundRect(bx,by,bw,bh,5); ctx.fill(); ctx.stroke();
+            ctx.font='bold 14px Arial'; ctx.fillStyle='#ff1493'; ctx.textAlign='center'; ctx.textBaseline='middle';
+            ctx.fillText(this.text, bx+bw/2, by+bh/2);
+            // тело самолёта
+            const px=this.x, py=this.y;
+            ctx.fillStyle='#ffb3d9'; ctx.strokeStyle='#ff1493'; ctx.lineWidth=3;
+            ctx.beginPath(); ctx.arc(px,py,18,0,Math.PI*2); ctx.fill(); ctx.stroke();
+            ctx.fillStyle='#ff69b4'; ctx.beginPath(); ctx.arc(px+25,py,10,0,Math.PI*2); ctx.fill(); ctx.stroke();
+            ctx.fillStyle='#ff1493';
+            const drawWing=(sx,sy,flip)=>{
+                ctx.save(); ctx.translate(px-5,py+sy); ctx.scale(0.8,flip?-0.8:0.8);
+                ctx.beginPath(); ctx.moveTo(0,5); ctx.bezierCurveTo(-10,-5,-20,2,0,20); ctx.bezierCurveTo(20,2,10,-5,0,5);
+                ctx.fill(); ctx.stroke(); ctx.restore();
+            };
+            drawWing(0,-20,false); drawWing(0,20,true);
+            ctx.fillStyle='#ff69b4'; ctx.beginPath();
+            ctx.moveTo(px-18,py); ctx.lineTo(px-30,py-12); ctx.lineTo(px-18,py-5); ctx.closePath(); ctx.fill(); ctx.stroke();
+            ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(px+8,py-5,5,0,Math.PI*2); ctx.fill();
+            ctx.fillStyle='#333'; ctx.beginPath(); ctx.arc(px+9,py-5,3,0,Math.PI*2); ctx.fill();
+            ctx.strokeStyle='#ff1493'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(px+10,py+2,6,0,Math.PI); ctx.stroke();
+            const a = this.bannerOffset*12;
+            ctx.strokeStyle='#ff1493'; ctx.lineWidth=3;
+            for(let i=0;i<2;i++){const ang=a+i*Math.PI; ctx.beginPath(); ctx.moveTo(px+30,py); ctx.lineTo(px+30+Math.cos(ang)*12,py+Math.sin(ang)*12); ctx.stroke();}
+            ctx.restore();
+        }
+    }
 
-        function initClouds() {
-            clouds = [];
-            const cloudCount = Math.floor(canvas.width / 200) + 3;
-            for (let i = 0; i < cloudCount; i++) {
-                const x = Math.random() * canvas.width;
-                const y = Math.random() * (canvas.height * 0.4);
-                clouds.push(new Cloud(x, y));
+    let airplane = new Airplane();
+
+    function initClouds() {
+        clouds = [];
+        const n = Math.floor(canvas.width / 200) + 3;
+        for (let i=0;i<n;i++) clouds.push(new Cloud(Math.random()*canvas.width, Math.random()*canvas.height*0.4));
+    }
+
+    // ─── Классы объектов ─────────────────────────────────────────────────────
+    class Obstacle {
+        constructor(x) {
+            this.x = x;
+            const s = getObstacleSize(); this.width=s; this.height=s;
+            this.y = canvas.height - getGroundHeight() - this.height;
+            this.catIndex = catImages.length > 0 ? Math.floor(Math.random()*catImages.length) : -1;
+        }
+        update(m=1) { this.x -= gameState.gameSpeed * m; }
+        draw() {
+            if (this.catIndex>=0 && catImages[this.catIndex])
+                ctx.drawImage(catImages[this.catIndex], this.x, this.y, this.width, this.height);
+            else { ctx.font='50px Arial'; ctx.fillText('🐱', this.x, this.y+this.height); }
+        }
+        isOffScreen() { return this.x + this.width < 0; }
+    }
+
+    class Heart {
+        constructor(x,y) { this.x=x; this.y=y; this.size=getHeartSize(); this.wobble=Math.random()*Math.PI*2; this.rot=0; }
+        update(m=1) { this.x-=gameState.gameSpeed*m; this.wobble+=0.15; this.rot+=0.08; }
+        draw() {
+            ctx.save();
+            ctx.translate(this.x, this.y+Math.sin(this.wobble)*5);
+            ctx.rotate(this.rot);
+            ctx.fillStyle='#ff69b4';
+            const s=this.size;
+            ctx.beginPath();
+            ctx.moveTo(0,s/4); ctx.bezierCurveTo(-s/2,-s/4,-s,s/8,0,s); ctx.bezierCurveTo(s,s/8,s/2,-s/4,0,s/4);
+            ctx.fill();
+            ctx.restore();
+        }
+        isOffScreen() { return this.x+this.size<0; }
+    }
+
+    class Powerup {
+        constructor(x,y) { this.x=x; this.y=y; this.size=40; this.rot=0; this.pulse=0; }
+        update(m=1) { this.x-=gameState.gameSpeed*m; this.rot+=0.1; this.pulse+=0.15; }
+        draw() {
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            const sc=1+Math.sin(this.pulse)*0.15; ctx.scale(sc,sc);
+            if (powerupImageLoaded && powerupImage.complete)
+                ctx.drawImage(powerupImage, -this.size/2, -this.size/2, this.size, this.size);
+            else { ctx.font='50px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('⚡',0,0); }
+            ctx.restore();
+        }
+        isOffScreen() { return this.x+this.size<0; }
+    }
+
+    class Particle {
+        constructor(x,y,color) {
+            this.x=x; this.y=y;
+            this.vx=(Math.random()-0.5)*8; this.vy=(Math.random()-0.5)*8-2;
+            this.color=color; this.life=1; this.size=Math.random()*6+2;
+        }
+        update() { this.x+=this.vx; this.y+=this.vy; this.vy+=0.3; this.life-=0.025; }
+        draw() { ctx.globalAlpha=this.life; ctx.fillStyle=this.color; ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1; }
+        isDead() { return this.life<=0; }
+    }
+
+    // ─── Рисование игрока ────────────────────────────────────────────────────
+    function drawPlayer() {
+        if (player.isDead) return;
+        if (playerImageLoaded && playerImage.complete) {
+            ctx.drawImage(playerImage, player.x, player.y + player.height*0.1, player.width, player.height);
+        } else {
+            ctx.save();
+            ctx.translate(player.x+player.width/2, player.y);
+            const sc = player.width/40;
+            ctx.fillStyle='#6a5acd'; ctx.fillRect(-12*sc,20*sc,24*sc,30*sc);
+            ctx.fillStyle='#ffdbac'; ctx.beginPath(); ctx.arc(0,10*sc,12*sc,0,Math.PI*2); ctx.fill();
+            ctx.fillStyle='#4b0082'; ctx.beginPath(); ctx.moveTo(-15*sc,10*sc); ctx.lineTo(0,-20*sc); ctx.lineTo(15*sc,10*sc); ctx.closePath(); ctx.fill();
+            ctx.fillStyle='#ffd700'; ctx.beginPath(); ctx.arc(0,-5*sc,3*sc,0,Math.PI*2); ctx.fill();
+            ctx.restore();
+        }
+    }
+
+    // ─── Спавн ───────────────────────────────────────────────────────────────
+    function spawnObstacle() {
+        const last = obstacles[obstacles.length-1];
+        const spd  = 1 + (gameState.gameSpeed-2)*0.1;
+        const minD = 350*spd, maxD = 900*spd;
+        if (!last || last.x < canvas.width - (minD + Math.random()*(maxD-minD)))
+            obstacles.push(new Obstacle(canvas.width));
+    }
+
+    function spawnHeart() {
+        if (Math.random() < 0.015) {
+            hearts.push(new Heart(canvas.width + Math.random()*100, canvas.height - 100 - Math.random()*150));
+        }
+    }
+
+    function spawnPowerup() {
+        if (powerups.length > 0) return;
+        if (Math.random() < 0.0005) {
+            const groundY = canvas.height - getGroundHeight();
+            const maxJump = (player.jumpPower * player.jumpPower) / (2 * player.gravity);
+            const minY = groundY - maxJump*1.1 - 30;
+            const maxY = groundY - maxJump*0.8 - 30;
+            powerups.push(new Powerup(canvas.width + Math.random()*100, minY + Math.random()*(maxY-minY)));
+        }
+    }
+
+    function createParticles(x,y,color,n=15) {
+        for(let i=0;i<n;i++) particles.push(new Particle(x,y,color));
+    }
+
+    // ─── Прыжок ──────────────────────────────────────────────────────────────
+    function jump() {
+        if (player.onGround && !player.isDead && gameState.running) {
+            player.vy = -player.jumpPower;
+            player.vx = player.jumpForwardSpeed;
+        }
+    }
+
+    // ─── Физика игрока ───────────────────────────────────────────────────────
+    function updatePlayer() {
+        player.vy += player.gravity;
+        player.y  += player.vy;
+
+        if (!player.onGround && player.vx > 0) {
+            player.x += player.vx;
+            player.vx *= 0.95;
+            if (player.x > canvas.width * 0.5) { player.x = canvas.width*0.5; player.vx=0; }
+        } else if (player.onGround) {
+            if (player.x > player.initialX) player.x = Math.max(player.initialX, player.x - 3);
+            player.vx = 0;
+        }
+
+        const groundY = canvas.height - getGroundHeight() - player.height;
+        if (player.y >= groundY) { player.y=groundY; player.vy=0; player.onGround=true; }
+        else player.onGround = false;
+    }
+
+    // ─── Коллизии ────────────────────────────────────────────────────────────
+    function checkCollisions() {
+        if (gameState.distance < 100) return;
+
+        for (const ob of obstacles) {
+            const ho = player.width*0.35;
+            const pl = player.x+ho, pr = player.x+player.width-ho;
+            const oo = ob.width*0.3;
+            const ol = ob.x+oo, or2 = ob.x+ob.width-oo;
+            if (pr>ol && pl<or2) {
+                if (player.y+player.height-15 >= ob.y) { gameOver(); return; }
             }
         }
 
-        function getObstacleSize() {
-            const baseSize = 45;
-            const scale = Math.min(canvas.width / 800, canvas.height / 600, 1.5);
-            return baseSize * scale;
-        }
-
-        class Obstacle {
-            constructor(x) {
-                this.x = x;
-                const baseSize = getObstacleSize();
-                this.width = baseSize;
-                this.height = baseSize;
-                this.y = canvas.height - getGroundHeight() - this.height;
-                
-                if (catImages.length > 0) {
-                    this.catIndex = Math.floor(Math.random() * catImages.length);
-                } else {
-                    this.catIndex = -1;
-                }
-            }
-
-            update(speedMultiplier = 1) {
-                this.x -= gameState.gameSpeed * speedMultiplier;
-            }
-
-            draw() {
-                if (this.catIndex >= 0 && catImages[this.catIndex]) {
-                    ctx.drawImage(catImages[this.catIndex], this.x, this.y, this.width, this.height);
-                } else {
-                    ctx.font = '50px Arial';
-                    ctx.fillText('🐱', this.x, this.y + this.height);
-                }
-            }
-
-            isOffScreen() {
-                return this.x + this.width < 0;
+        for (let i=hearts.length-1;i>=0;i--) {
+            const h = hearts[i];
+            const dx = player.x+player.width/2-h.x, dy = player.y+player.height/2-h.y;
+            if (Math.sqrt(dx*dx+dy*dy) < player.width/2+h.size) {
+                gameState.heartsCollected++;
+                gameState.score += 100;
+                createParticles(h.x, h.y, '#ff69b4');
+                playHeart();
+                checkBiomeChange(gameState.heartsCollected);
+                hearts.splice(i,1);
             }
         }
 
-        function getHeartSize() {
-            const baseSize = 20;
-            const scale = Math.min(canvas.width / 800, canvas.height / 600, 1.5);
-            return baseSize * scale;
-        }
-        
-        class Heart {
-            constructor(x, y) {
-                this.x = x;
-                this.y = y;
-                this.size = getHeartSize();
-                this.wobble = Math.random() * Math.PI * 2;
-                this.rotation = 0;
-            }
-
-            update(speedMultiplier = 1) {
-                this.x -= gameState.gameSpeed * speedMultiplier;
-                this.wobble += 0.15;
-                this.rotation += 0.08;
-            }
-
-            draw() {
-                ctx.save();
-                ctx.translate(this.x, this.y + Math.sin(this.wobble) * 5);
-                ctx.rotate(this.rotation);
-                
-                ctx.fillStyle = '#ff69b4';
-                this.drawHeart();
-                
-                ctx.restore();
-            }
-
-            drawHeart() {
-                const s = this.size;
-                ctx.beginPath();
-                ctx.moveTo(0, s/4);
-                ctx.bezierCurveTo(-s/2, -s/4, -s, s/8, 0, s);
-                ctx.bezierCurveTo(s, s/8, s/2, -s/4, 0, s/4);
-                ctx.fill();
-            }
-
-            isOffScreen() {
-                return this.x + this.size < 0;
+        for (let i=powerups.length-1;i>=0;i--) {
+            const p = powerups[i];
+            const dx = player.x+player.width/2-p.x, dy = player.y+player.height/2-p.y;
+            if (Math.sqrt(dx*dx+dy*dy) < player.width/2+p.size/2 && !player.onGround) {
+                player.boostActive = true;
+                player.boostEndTime = Date.now()+5000;
+                gameState.gameSpeed *= 1.5;
+                gameState.score += 200;
+                createParticles(p.x, p.y, '#ffff00', 20);
+                playPowerup();
+                powerups.splice(i,1);
             }
         }
+    }
 
-        class Powerup {
-            constructor(x, y) {
-                this.x = x;
-                this.y = y;
-                this.size = 40;
-                this.rotation = 0;
-                this.pulse = 0;
-            }
+    // ─── Игровой цикл ────────────────────────────────────────────────────────
+    function update() {
+        if (!gameState.running) return;
+        updatePlayer();
+        spawnObstacle(); spawnHeart(); spawnPowerup();
+        checkCollisions();
 
-            update(speedMultiplier = 1) {
-                this.x -= gameState.gameSpeed * speedMultiplier;
-                this.rotation += 0.1;
-                this.pulse += 0.15;
-            }
-
-            draw() {
-                ctx.save();
-                ctx.translate(this.x, this.y);
-                
-                const scale = 1 + Math.sin(this.pulse) * 0.15;
-                ctx.scale(scale, scale);
-                
-                if (powerupImageLoaded && powerupImage.complete) {
-                    ctx.drawImage(powerupImage, -this.size/2, -this.size/2, this.size, this.size);
-                } else {
-                    ctx.font = '50px Arial';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.fillText('⚡', 0, 0);
-                }
-                
-                ctx.restore();
-            }
-
-            isOffScreen() {
-                return this.x + this.size < 0;
-            }
+        if (player.boostActive && Date.now() >= player.boostEndTime) {
+            player.boostActive = false;
+            gameState.gameSpeed /= 1.5;
         }
 
-        class Particle {
-            constructor(x, y, color) {
-                this.x = x;
-                this.y = y;
-                this.vx = (Math.random() - 0.5) * 8;
-                this.vy = (Math.random() - 0.5) * 8 - 2;
-                this.color = color;
-                this.life = 1;
-                this.size = Math.random() * 6 + 2;
-            }
+        gameState.distance += gameState.gameSpeed * 0.1;
 
-            update() {
-                this.x += this.vx;
-                this.y += this.vy;
-                this.vy += 0.3;
-                this.life -= 0.025;
-            }
+        const off = player.x - player.initialX;
+        const maxOff = canvas.width * 0.35;
+        const speedMul = 1 - (Math.min(Math.max(off/maxOff,0),1) * 0.4);
 
-            draw() {
-                ctx.globalAlpha = this.life;
-                ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.globalAlpha = 1;
-            }
+        obstacles = obstacles.filter(o => { o.update(speedMul); return !o.isOffScreen(); });
+        hearts     = hearts.filter(h => { h.update(speedMul); return !h.isOffScreen(); });
+        powerups   = powerups.filter(p => { p.update(speedMul); return !p.isOffScreen(); });
+        particles  = particles.filter(p => { p.update(); return !p.isDead(); });
+        clouds.forEach(c => c.update());
+        airplane.update();
 
-            isDead() {
-                return this.life <= 0;
-            }
+        document.getElementById('hearts').textContent   = gameState.heartsCollected;
+        document.getElementById('score').textContent    = Math.floor(gameState.score);
+        document.getElementById('distance').textContent = Math.floor(gameState.distance);
+    }
+
+    function draw() {
+        const grad = ctx.createLinearGradient(0,0,0,canvas.height);
+        grad.addColorStop(0,   currentBiome.skyColors[0]);
+        grad.addColorStop(0.7, currentBiome.skyColors[1]);
+        grad.addColorStop(1,   currentBiome.skyColors[2]);
+        ctx.fillStyle = grad;
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+
+        clouds.forEach(c => c.draw());
+        airplane.draw();
+
+        const gH = getGroundHeight(), gY = canvas.height - gH;
+        const gg = ctx.createLinearGradient(0,gY,0,canvas.height);
+        gg.addColorStop(0,   currentBiome.groundColors[0]);
+        gg.addColorStop(0.3, currentBiome.groundColors[1]);
+        gg.addColorStop(1,   currentBiome.groundColors[2]);
+        ctx.fillStyle = gg;
+        ctx.fillRect(0,gY,canvas.width,gH);
+
+        ctx.strokeStyle = currentBiome.groundColors[2]+'80'; ctx.lineWidth=2;
+        for(let i=0;i<canvas.width;i+=15){
+            const off=(gameState.distance*2)%30;
+            ctx.beginPath(); ctx.moveTo(i-off,gY); ctx.lineTo(i-off+5,gY+15); ctx.stroke();
         }
 
-        function drawPlayer() {
-            if (player.isDead) return;
+        obstacles.forEach(o=>o.draw());
+        hearts.forEach(h=>h.draw());
+        powerups.forEach(p=>p.draw());
+        particles.forEach(p=>p.draw());
+        drawPlayer();
 
-            if (usePlayerImage && playerImageLoaded && playerImage.complete) {
-                const visualOffset = player.height * 0.1;
-                ctx.drawImage(playerImage, 
-                              player.x,
-                              player.y + visualOffset, 
-                              player.width, 
-                              player.height);
-            } else {
-                ctx.save();
-                ctx.translate(player.x + player.width / 2, player.y);
-                
-                const scale = player.width / 40;
-                
-                ctx.fillStyle = '#6a5acd';
-                ctx.fillRect(-12 * scale, 20 * scale, 24 * scale, 30 * scale);
-                
-                ctx.fillStyle = '#ffdbac';
-                ctx.beginPath();
-                ctx.arc(0, 10 * scale, 12 * scale, 0, Math.PI * 2);
-                ctx.fill();
-                
-                ctx.fillStyle = '#4b0082';
-                ctx.beginPath();
-                ctx.moveTo(-15 * scale, 10 * scale);
-                ctx.lineTo(0, -20 * scale);
-                ctx.lineTo(15 * scale, 10 * scale);
-                ctx.closePath();
-                ctx.fill();
-                
-                ctx.fillStyle = '#ffd700';
-                ctx.beginPath();
-                ctx.arc(0, -5 * scale, 3 * scale, 0, Math.PI * 2);
-                ctx.fill();
-                
-                ctx.restore();
-            }
-        }
-
-        function spawnObstacle() {
-            const lastObstacle = obstacles[obstacles.length - 1];
-            
-            const baseMinDistance = 350;
-            const baseMaxDistance = 900;
-            const speedMultiplier = 1 + (gameState.gameSpeed - 2) * 0.1;
-            
-            const minDistance = baseMinDistance * speedMultiplier;
-            const maxDistance = baseMaxDistance * speedMultiplier;
-            const randomDistance = minDistance + Math.random() * (maxDistance - minDistance);
-            
-            if (!lastObstacle || lastObstacle.x < canvas.width - randomDistance) {
-                obstacles.push(new Obstacle(canvas.width));
-            }
-        }
-
-        function spawnHeart() {
-            if (Math.random() < 0.015) {
-                const x = canvas.width + Math.random() * 100;
-                const y = canvas.height - 100 - Math.random() * 150;
-                hearts.push(new Heart(x, y));
-            }
-        }
-
-        function spawnPowerup() {
-            // Только один бустер на экране
-            if (powerups.length > 0) return;
-            
-            // Очень редко появляется (0.05% шанс каждый фрейм - примерно раз в 30-40 секунд)
-            if (Math.random() < 0.0005) {
-                const x = canvas.width + Math.random() * 100;
-                
-                // ВАЖНО: Бустер появляется высоко в воздухе - на высоте прыжка или выше
-                // Рассчитываем максимальную высоту прыжка игрока
-                const groundY = canvas.height - getGroundHeight();
-                const maxJumpHeight = (player.jumpPower * player.jumpPower) / (2 * player.gravity);
-                
-                // Размещаем бустер на высоте от 80% до 110% высоты максимального прыжка
-                // Это означает, что иногда нужно прыгнуть в самый пик, а иногда чуть не допрыгнуть
-                const minY = groundY - maxJumpHeight * 1.1 - 30;
-                const maxY = groundY - maxJumpHeight * 0.8 - 30;
-                const y = minY + Math.random() * (maxY - minY);
-                
-                powerups.push(new Powerup(x, y));
-            }
-        }
-
-        function createParticles(x, y, color, count = 15) {
-            for (let i = 0; i < count; i++) {
-                particles.push(new Particle(x, y, color));
-            }
-        }
-
-        function updatePlayer() {
-            player.vy += player.gravity;
-            player.y += player.vy;
-            
-            if (!player.onGround && player.vx > 0) {
-                player.x += player.vx;
-                player.vx *= 0.95;
-                
-                const maxX = canvas.width * 0.5;
-                if (player.x > maxX) {
-                    player.x = maxX;
-                    player.vx = 0;
-                }
-            } else if (player.onGround) {
-                if (player.x > player.initialX) {
-                    const returnSpeed = 3;
-                    player.x = Math.max(player.initialX, player.x - returnSpeed);
-                }
-                player.vx = 0;
-            }
-
-            const groundY = canvas.height - getGroundHeight() - player.height;
-            if (player.y >= groundY) {
-                player.y = groundY;
-                player.vy = 0;
-                player.onGround = true;
-            } else {
-                player.onGround = false;
-            }
-        }
-
-        function jump() {
-            if (player.onGround && !player.isDead) {
-                player.vy = -player.jumpPower;
-                player.vx = player.jumpForwardSpeed;
-            }
-        }
-
-        function checkCollisions() {
-            if (gameState.distance < 100) {
-                return;
-            }
-            
-            obstacles.forEach(obstacle => {
-                const horizontalHitboxOffset = player.width * 0.35;
-                const playerHitboxLeft = player.x + horizontalHitboxOffset;
-                const playerHitboxRight = player.x + player.width - horizontalHitboxOffset;
-                
-                const obstacleHitboxOffset = obstacle.width * 0.3;
-                const obstacleHitboxLeft = obstacle.x + obstacleHitboxOffset;
-                const obstacleHitboxRight = obstacle.x + obstacle.width - obstacleHitboxOffset;
-                
-                const horizontalOverlap = playerHitboxRight > obstacleHitboxLeft && playerHitboxLeft < obstacleHitboxRight;
-                
-                if (horizontalOverlap) {
-                    const playerBottom = player.y + player.height;
-                    const obstacleTop = obstacle.y;
-                    
-                    const hitboxHeight = player.height * 0.15;
-                    const hitboxBottomOffset = 15;
-                    
-                    const playerHitboxBottom = playerBottom - hitboxBottomOffset;
-                    
-                    if (playerHitboxBottom >= obstacleTop) {
-                        gameOver();
-                    }
-                }
-            });
-
-            hearts.forEach((heart, i) => {
-                const dx = player.x - heart.x;
-                const dy = player.y + player.height/2 - heart.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                
-                if (dist < player.width/2 + heart.size) {
-                    gameState.heartsCollected++;
-                    gameState.score += 100;
-                    createParticles(heart.x, heart.y, '#ff69b4');
-                    
-                    playHeartSound();
-                    
-                    // Проверяем смену биома
-                    checkBiomeChange(gameState.heartsCollected);
-                    
-                    hearts.splice(i, 1);
-                }
-            });
-
-            // ИСПРАВЛЕНО: Проверяем что игрок в воздухе при сборе бустера
-            powerups.forEach((powerup, i) => {
-                const dx = player.x + player.width/2 - powerup.x;
-                const dy = player.y + player.height/2 - powerup.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                
-                // Можно собрать бустер только если игрок НЕ на земле (в прыжке)
-                if (dist < player.width/2 + powerup.size/2 && !player.onGround) {
-                    player.boostActive = true;
-                    player.boostEndTime = Date.now() + 5000; // 5 секунд буста
-                    gameState.gameSpeed *= 1.5;
-                    gameState.score += 200;
-                    createParticles(powerup.x, powerup.y, '#ffff00', 20);
-                    
-                    playPowerupSound();
-                    
-                    powerups.splice(i, 1);
-                }
-            });
-        }
-
-        function update() {
-            if (!gameState.running) return;
-
-            updatePlayer();
-            spawnObstacle();
-            spawnHeart();
-            spawnPowerup();
-            checkCollisions();
-
-            // ВАЖНО: После окончания буста скорость возвращается к нормальной
-            if (player.boostActive && Date.now() >= player.boostEndTime) {
-                player.boostActive = false;
-                gameState.gameSpeed /= 1.5; // Возвращаем скорость обратно
-            }
-
-            gameState.distance += gameState.gameSpeed * 0.1;
-            
-            if (Math.floor(gameState.distance) % 300 === 0 && Math.floor(gameState.distance) > 0) {
-                if (gameState.distance % 300 < 1) {
-                    gameState.gameSpeed += 0.03;
-                }
-            }
-            
-            const playerOffset = player.x - player.initialX;
-            const maxOffset = canvas.width * 0.35;
-            const offsetRatio = Math.min(Math.max(playerOffset / maxOffset, 0), 1);
-            
-            const speedMultiplier = 1 - (offsetRatio * 0.4);
-
-            obstacles = obstacles.filter(o => {
-                o.update(speedMultiplier);
-                return !o.isOffScreen();
-            });
-
-            hearts = hearts.filter(h => {
-                h.update(speedMultiplier);
-                return !h.isOffScreen();
-            });
-
-            powerups = powerups.filter(p => {
-                p.update(speedMultiplier);
-                return !p.isOffScreen();
-            });
-
-            particles = particles.filter(p => {
-                p.update();
-                return !p.isDead();
-            });
-
-            clouds.forEach(cloud => cloud.update());
-            airplane.update();
-
-            document.getElementById('hearts').textContent = gameState.heartsCollected;
-            document.getElementById('score').textContent = Math.floor(gameState.score);
-            document.getElementById('distance').textContent = Math.floor(gameState.distance);
-        }
-
-        function draw() {
-            // Градиент неба из текущего биома
-            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, currentBiome.skyColors[0]);
-            gradient.addColorStop(0.7, currentBiome.skyColors[1]);
-            gradient.addColorStop(1, currentBiome.skyColors[2]);
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            clouds.forEach(cloud => cloud.draw());
-            
-            airplane.draw();
-
-            const groundHeight = getGroundHeight();
-            const groundY = canvas.height - groundHeight;
-            
-            // Градиент земли из текущего биома
-            const grassGradient = ctx.createLinearGradient(0, groundY, 0, canvas.height);
-            grassGradient.addColorStop(0, currentBiome.groundColors[0]);
-            grassGradient.addColorStop(0.3, currentBiome.groundColors[1]);
-            grassGradient.addColorStop(1, currentBiome.groundColors[2]);
-            ctx.fillStyle = grassGradient;
-            ctx.fillRect(0, groundY, canvas.width, groundHeight);
-            
-            // Трава с цветом адаптированным к биому
-            ctx.strokeStyle = currentBiome.groundColors[2] + '80'; // Добавляем прозрачность
-            ctx.lineWidth = 2;
-            for (let i = 0; i < canvas.width; i += 15) {
-                const offset = (gameState.distance * 2) % 30;
-                ctx.beginPath();
-                ctx.moveTo(i - offset, groundY);
-                ctx.lineTo(i - offset + 5, groundY + 15);
-                ctx.stroke();
-            }
-
-            obstacles.forEach(o => o.draw());
-            hearts.forEach(h => h.draw());
-            powerups.forEach(p => p.draw());
-            particles.forEach(p => p.draw());
-            drawPlayer();
-
-            // Показываем уведомление о смене биома
-            if (showBiomeNotification && Date.now() - biomeNotificationTime < 3000) {
-                ctx.save();
-                ctx.font = 'bold 32px Arial';
-                ctx.fillStyle = '#ffffff';
-                ctx.strokeStyle = '#ff1493';
-                ctx.lineWidth = 4;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                
-                const text = currentBiome.notification;
-                const x = canvas.width / 2;
-                const y = canvas.height * 0.3;
-                
-                // Анимация появления/исчезания
-                const elapsed = Date.now() - biomeNotificationTime;
+        // Уведомление о биоме
+        if (showBiomeNotification) {
+            const elapsed = Date.now() - biomeNotificationTime;
+            if (elapsed < 3000) {
                 let alpha = 1;
-                if (elapsed < 500) {
-                    alpha = elapsed / 500;
-                } else if (elapsed > 2500) {
-                    alpha = 1 - (elapsed - 2500) / 500;
-                }
-                
+                if (elapsed < 500)       alpha = elapsed/500;
+                else if (elapsed > 2500) alpha = 1-(elapsed-2500)/500;
+                ctx.save();
+                ctx.font = 'bold 28px Arial';
                 ctx.globalAlpha = alpha;
-                ctx.strokeText(text, x, y);
-                ctx.fillText(text, x, y);
+                ctx.fillStyle = '#ffffff'; ctx.strokeStyle='#ff1493'; ctx.lineWidth=4;
+                ctx.textAlign='center'; ctx.textBaseline='middle';
+                ctx.strokeText(currentBiome.notification, canvas.width/2, canvas.height*0.3);
+                ctx.fillText(currentBiome.notification,   canvas.width/2, canvas.height*0.3);
                 ctx.restore();
-            } else if (showBiomeNotification) {
-                showBiomeNotification = false;
-            }
+            } else showBiomeNotification = false;
+        }
+    }
+
+    function gameLoop() {
+        if (gameState.running) update();
+        draw();
+        requestAnimationFrame(gameLoop);
+    }
+
+    // ─── Старт / Game Over ───────────────────────────────────────────────────
+    function startGame() {
+        unlockAudio(); // всегда разблокируем звук при нажатии кнопки
+        showScreen(null); // скрываем все меню
+
+        canvas.classList.add('game-active');
+
+        // Показываем кнопку прыжка на мобильных
+        if (IS_MOBILE) {
+            document.getElementById('jumpBtn').classList.add('visible');
         }
 
-        function gameLoop() {
-            if (gameState.running) {
-                update();
-            }
-            draw();
-            requestAnimationFrame(gameLoop);
-        }
-
-        function startGame() {
-            document.getElementById('startScreen').classList.add('hidden');
-            document.getElementById('gameOverScreen').classList.add('hidden');
-            document.getElementById('valentinesScreen').classList.add('hidden');
-            
-            canvas.classList.add('game-active');
-            
-            playGameMusic();
-            
+        setTimeout(() => {
             resizeCanvas();
-            
-            setTimeout(() => {
-                resizeCanvas();
-                
-                gameState = {
-                    running: true,
-                    score: 0,
-                    heartsCollected: 0,
-                    distance: 0,
-                    gameSpeed: 2
-                };
-                
-                // Устанавливаем начальный биом
-                currentBiome = BIOMES[0];
-                showBiomeNotification = false;
-                
-                updatePlayerSize();
-                player.y = canvas.height - getGroundHeight() - player.height;
-                player.vy = 0;
-                player.vx = 0;
-                player.initialX = player.x;
-                player.onGround = true;
-                player.isDead = false;
-                player.boostActive = false;
-                player.boostEndTime = 0;
-                
-                obstacles = [];
-                hearts = [];
-                powerups = [];
-                particles = [];
-                
-                initClouds();
-                airplane.reset();
-                
-                const initialObstacleCount = 3;
-                const baseMinDistance = 400;
-                const baseMaxDistance = 900;
-                
-                let currentX = canvas.width + 600;
-                
-                for (let i = 0; i < initialObstacleCount; i++) {
-                    const randomDistance = baseMinDistance + Math.random() * (baseMaxDistance - baseMinDistance);
-                    obstacles.push(new Obstacle(currentX));
-                    currentX += randomDistance;
-                }
-            }, 200);
-        }
 
-        function gameOver() {
-            if (player.isDead) return;
-            
-            player.isDead = true;
-            gameState.running = false;
-            createParticles(player.x, player.y, '#808080', 30);
-            
-            playDeathSound();
-            stopGameMusic();
-            
-            addHearts(gameState.heartsCollected);
-            
-            setTimeout(() => {
-                document.getElementById('finalHearts').textContent = gameState.heartsCollected;
-                document.getElementById('finalScore').textContent = Math.floor(gameState.score);
-                document.getElementById('finalDistance').textContent = Math.floor(gameState.distance);
-                document.getElementById('totalHeartsDisplay').textContent = getTotalHearts();
-                document.getElementById('gameOverScreen').classList.remove('hidden');
-            }, 500);
-        }
+            gameState = { running:true, score:0, heartsCollected:0, distance:0, gameSpeed:2 };
+            currentBiome = BIOMES[0]; showBiomeNotification = false;
 
-        canvas.addEventListener('click', jump);
-        
-        window.addEventListener('keydown', (e) => {
-            if (e.key === ' ' || e.key === 'w' || e.key === 'W' || e.key === 'ArrowUp') {
-                e.preventDefault();
-                
-                if (!document.getElementById('startScreen').classList.contains('hidden')) {
-                    startGame();
-                    return;
-                }
-                
-                if (!document.getElementById('gameOverScreen').classList.contains('hidden')) {
-                    startGame();
-                    return;
-                }
-                
-                jump();
-            }
-        });
-        
-        let touchStartY = 0;
-        let touchStartTime = 0;
-        
-        canvas.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            touchStartY = e.touches[0].clientY;
-            touchStartTime = Date.now();
-        }, { passive: false });
-        
-        canvas.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            const touchEndY = e.changedTouches[0].clientY;
-            const touchEndTime = Date.now();
-            const deltaY = touchStartY - touchEndY;
-            const deltaTime = touchEndTime - touchStartTime;
-            
-            if (deltaY > 30 || (deltaTime < 200 && Math.abs(deltaY) < 10)) {
-                jump();
-            }
-        }, { passive: false });
-        
-        canvas.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-        });
-
-        document.getElementById('startBtn').addEventListener('click', startGame);
-        document.getElementById('restartBtn').addEventListener('click', startGame);
-
-        window.addEventListener('load', () => {
-            resizeCanvas();
             updatePlayerSize();
-            updateValentinesUI();
-            initClouds();
-        });
-        
-        if (document.readyState === 'complete') {
-            setTimeout(() => {
-                resizeCanvas();
-                updatePlayerSize();
-                updateValentinesUI();
-                initClouds();
-            }, 100);
-        }
+            player.y = canvas.height - getGroundHeight() - player.height;
+            player.vy=0; player.vx=0; player.initialX=player.x;
+            player.onGround=true; player.isDead=false;
+            player.boostActive=false; player.boostEndTime=0;
 
-        gameLoop();
+            obstacles=[]; hearts=[]; powerups=[]; particles=[];
+            initClouds();
+            airplane.reset();
+
+            // Начальные препятствия
+            let cx = canvas.width + 600;
+            for(let i=0;i<3;i++){
+                obstacles.push(new Obstacle(cx));
+                cx += 400 + Math.random()*500;
+            }
+
+            playMusic();
+        }, 200);
+    }
+
+    function gameOver() {
+        if (player.isDead) return;
+        player.isDead=true; gameState.running=false;
+        createParticles(player.x, player.y, '#808080', 30);
+        playDeath(); stopMusic();
+        addHearts(gameState.heartsCollected);
+
+        document.getElementById('jumpBtn').classList.remove('visible');
+
+        setTimeout(() => {
+            document.getElementById('finalHearts').textContent   = gameState.heartsCollected;
+            document.getElementById('finalScore').textContent    = Math.floor(gameState.score);
+            document.getElementById('finalDistance').textContent = Math.floor(gameState.distance);
+            document.getElementById('totalHeartsDisplay').textContent = getTotalHearts();
+            showScreen('gameOverScreen');
+        }, 600);
+    }
+
+    // ─── Ввод: клавиатура ────────────────────────────────────────────────────
+    window.addEventListener('keydown', e => {
+        if ([' ','w','W','ArrowUp'].includes(e.key)) {
+            e.preventDefault();
+            if (!document.getElementById('startScreen').classList.contains('hidden'))   { startGame(); return; }
+            if (!document.getElementById('gameOverScreen').classList.contains('hidden')){ startGame(); return; }
+            jump();
+        }
+    });
+
+    // ─── Ввод: тач на canvas ─────────────────────────────────────────────────
+    let touchStartY = 0, touchStartTime = 0, touchMoved = false;
+
+    canvas.addEventListener('touchstart', e => {
+        e.preventDefault();
+        touchStartY = e.touches[0].clientY;
+        touchStartTime = Date.now();
+        touchMoved = false;
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', e => {
+        e.preventDefault();
+        if (Math.abs(e.touches[0].clientY - touchStartY) > 10) touchMoved = true;
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', e => {
+        e.preventDefault();
+        if (touchMoved) return; // Игнорируем свайпы
+        const dt = Date.now() - touchStartTime;
+        const dy = touchStartY - e.changedTouches[0].clientY;
+        if (dt < 300 || dy > 20) jump();
+    }, { passive: false });
+
+    // Клик мышью (десктоп)
+    canvas.addEventListener('click', jump);
+
+    // ─── Кнопка прыжка (мобильные) ───────────────────────────────────────────
+    const jumpBtn = document.getElementById('jumpBtn');
+    jumpBtn.addEventListener('touchstart', e => {
+        e.preventDefault(); e.stopPropagation(); jump();
+    }, { passive: false });
+    jumpBtn.addEventListener('click', e => {
+        e.stopPropagation(); jump();
+    });
+
+    // ─── Кнопки меню ─────────────────────────────────────────────────────────
+    document.getElementById('startBtn').addEventListener('click', startGame);
+    document.getElementById('restartBtn').addEventListener('click', startGame);
+
+    // Блокируем контекстное меню на canvas
+    canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+    // ─── Инициализация ───────────────────────────────────────────────────────
+    window.addEventListener('load', () => {
+        resizeCanvas();
+        updatePlayerSize();
+        updateValentinesUI();
+        initClouds();
+        requestAnimationFrame(gameLoop);
+    });
+
     </script>
 </body>
 </html>
+
